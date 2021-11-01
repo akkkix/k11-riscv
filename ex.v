@@ -26,4 +26,6 @@ always @(posedge clk or posedge rst) begin
     end
 end
 
+assign ready_o = cke;
+
 endmodule

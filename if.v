@@ -11,6 +11,8 @@ module if(
     //output reg  [7:0] m_data,
     output reg        valid_ro,
     input  wire       ready_i
+
+
 );
 
 wire cke = ~valid_ro | ready_i;
@@ -25,5 +27,7 @@ always @(posedge clk or posedge rst) begin
         end
     end
 end
+
+assign ready_o = cke;
 
 endmodule

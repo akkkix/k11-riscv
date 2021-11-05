@@ -11,12 +11,10 @@ module if(
 
     input wire [31:0] branch_addr_i,
     input wire branch_taken_i
-
 );
 
 wire cke = ~valid_ro | ready_i;
 reg  [31:0]pc_ro;
-
 reg branch_taken_r;
 reg branch_addr_r;
 
@@ -29,9 +27,10 @@ always @(posedge clk or posedge rst) begin
     else begin
         if(cke) begin
             //valid_ro <= valid_i;
-            pc_ro <= pc_ro + 32'd4;
+            pc_ro <= (branch_taken_r | branch_taken_i) ? branch_addr_r : pc_ro + 32'd4;
+            branch_taken_r <= 1'b0;
         end
-        if(branch_taken_i) begin
+        else if(branch_taken_i) begin
             branch_taken_r <= branch_taken_i;
             branch_addr_r <= branch_addr_i;
         end

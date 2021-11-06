@@ -19,6 +19,6 @@ module insrom(clk,addr,dout);
     end
 
     initial begin
-        $readmemh("./mem/insrom.dat",mem_bank);
+        $readmemh("../mem/insrom.dat",mem_bank);
     end
 endmodule

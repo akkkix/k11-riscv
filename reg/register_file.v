@@ -176,7 +176,7 @@ module register_file(
 	wire [31:0] data31;
 
 	
-	register_cell r0(.clk(clk),.rst(rst),.din(result_i),.we(we0),.dout());
+	//register_cell r0(.clk(clk),.rst(rst),.din(result_i),.we(we0),.dout());
 	register_cell r1(.clk(clk),.rst(rst),.din(result_i),.we(we1),.dout(data1));
 	register_cell r2(.clk(clk),.rst(rst),.din(result_i),.we(we2),.dout(data2));
 	register_cell r3(.clk(clk),.rst(rst),.din(result_i),.we(we3),.dout(data3));

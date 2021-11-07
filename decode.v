@@ -82,7 +82,7 @@ always @(posedge clk or posedge rst) begin
             valid_ro <= valid_i & ~rsreserved_i; //matiawase
             pc_ro <= pc_i;
             inst_ro <= inst_i;
-            r0data_ro <= r0data_i:
+            r0data_ro <= r0data_i;
             r1data_ro <= r1data_i;
         end
     end

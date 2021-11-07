@@ -42,6 +42,7 @@ module register_file(
 	assign reserved_flg_o = ((reserve_status[r0_i] && r0v_i) || (reserve_status[r1_i] && r1v_i)) ? 1'b1 : 1'b0;
 	
 	assign r_opr0_o =
+		(r0v_i == 1'b0) ? 32'hffffffff:
 		(r0_i == 5'd0) ? data0 :
 		(r0_i == 5'd1) ? data1 :
 		(r0_i == 5'd2) ? data2 :
@@ -76,6 +77,7 @@ module register_file(
 		(r0_i == 5'd31) ? data31 : 32'hffffffff;
 	
 	assign r_opr1_o =
+		(r1v_i == 1'b0) ? 32'hffffffff:
 		(r1_i == 5'd0) ? data0 :
 		(r1_i == 5'd1) ? data1 :
 		(r1_i == 5'd2) ? data2 :

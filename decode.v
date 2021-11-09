@@ -33,7 +33,7 @@ module decode(
     output reg [31:0] r0data_ro,
     output reg [31:0] r1data_ro
 
-    //input wire branch_taken_i
+    //input wire jump_taken_i
 );
 
 `include "./opcode_def.v"

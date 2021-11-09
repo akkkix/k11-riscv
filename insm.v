@@ -20,7 +20,7 @@ module insm(
 
     output wire [31:0] inst_o
 
-    
+    //input wire jump_taken_i
 );
 
 wire cke = ~valid_ro | ready_i;

@@ -39,6 +39,11 @@ wire [19:0] inst_imm_31_12_20_21 = {inst_i[`J_INST_IMM_31],inst_i[`J_INST_IMM_12
 wire [11:0] inst_imm_31_7_25_8 =  {inst_i[`B_INST_IMM_31],inst_i[`B_INST_IMM_7],inst_i[`B_INST_IMM_25],inst_i[`B_INST_IMM_8]};
 wire [2:0] funct3 = inst_i[`INST_FUNCT3];
 
+wire branch_taken = 
+    (funct3 == FUNCT3_BEQ) ? ((r0data_i == r1data_i) ? 1'b1 : 1'b0) :
+    (funct3 == FUNCT3_BNE) ? ((r0data_i != r1data_i) ? 1'b1 : 1'b0) :
+    1'b0;
+
 wire cke = ~valid_ro | ready_i;
 
 always @(posedge clk or posedge rst) begin
@@ -72,9 +77,9 @@ always @(posedge clk or posedge rst) begin
             end else if(opcode == BOP_AUIPC) begin
                 result_ro <= {inst_i[`U_INST_IMM_12] , {12{1'b0}}} + pc_i;
             end else if(opcode == BOP_JAL) begin
-                result_ro <= pc_i + 32'd4; // todo
+                result_ro <= pc_i + 32'd4; 
             end else if(opcode == BOP_JALR) begin
-                result_ro <= pc_i + 32'd4; //todo
+                result_ro <= pc_i + 32'd4; 
             end
         end
     end
@@ -90,6 +95,7 @@ assign jump_taken_o =
     (
         (opcode == BOP_JAL) ? 1'b1 :
         (opcode == BOP_JALR) ? 1'b1 :
+        (opcode == BOP_BRANCH) ? branch_taken :
         1'b0
     ) & cke & valid_i;
 

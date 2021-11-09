@@ -44,6 +44,7 @@ wire [11:0] inst_imm_25_7 = {inst_i[`S_INST_IMM_25],inst_i[`S_INST_IMM_7]};
 wire [19:0] inst_imm_31_12_20_21 = {inst_i[`J_INST_IMM_31],inst_i[`J_INST_IMM_12],inst_i[`J_INST_IMM_20],inst_i[`J_INST_IMM_21]};
 wire [11:0] inst_imm_31_7_25_8 =  {inst_i[`B_INST_IMM_31],inst_i[`B_INST_IMM_7],inst_i[`B_INST_IMM_25],inst_i[`B_INST_IMM_8]};
 wire [2:0] funct3 = inst_i[`INST_FUNCT3];
+wire [6:0] funct7 = inst_i[`INST_FUNCT7];
 
 wire branch_taken = 
     (funct3 == FUNCT3_BEQ) ? ((r0data_i == r1data_i) ? 1'b1 : 1'b0) :
@@ -76,16 +77,17 @@ always @(posedge clk or posedge rst) begin
                     (funct3 == FUNCT3_OR) ? r0data_i | {{20{inst_imm_20[11]}} ,inst_imm_20} :
                     (funct3 == FUNCT3_AND) ? r0data_i & {{20{inst_imm_20[11]}} ,inst_imm_20} :
                     (funct3 == FUNCT3_SLL) ? r0data_i << inst_imm_20[4:0] :
-                    (funct3 == FUNCT3_SRL) ? r0data_i >> inst_imm_20[4:0] :
+                    (funct3 == FUNCT3_SRL && funct7 == FUNCT7_SRL) ? r0data_i >> inst_imm_20[4:0] :
                     32'hFFFFFFFF;
             end else if(opcode == BOP_OP) begin
                 result_ro <= 
-                    (funct3 == FUNCT3_ADD) ? r0data_i + r1data_i :
+                    (funct3 == FUNCT3_ADD && funct7 == FUNCT7_ADD) ? r0data_i + r1data_i :
+                    (funct3 == FUNCT3_SUB && funct7 == FUNCT7_SUB) ? r0data_i + (~r1data_i) + 32'd1 :
                     (funct3 == FUNCT3_XOR) ? r0data_i ^ r1data_i :
                     (funct3 == FUNCT3_OR) ? r0data_i | r1data_i :
                     (funct3 == FUNCT3_AND) ? r0data_i & r1data_i :
                     (funct3 == FUNCT3_SLL) ? r0data_i << r1data_i[4:0] :
-                    (funct3 == FUNCT3_SRL) ? r0data_i >> inst_imm_20[4:0] :
+                    (funct3 == FUNCT3_SRL && funct7 == FUNCT7_SRL) ? r0data_i >> inst_imm_20[4:0] :
                     32'hFFFFFFFF;
             end else if(opcode == BOP_LUI) begin
                 result_ro <= {inst_i[`U_INST_IMM_12] , {12{1'b0}}};

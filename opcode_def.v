@@ -45,6 +45,11 @@ parameter FUNCT3_SRL    =   3'b101;
 parameter FUNCT3_SRA    =   3'b101;
 parameter FUNCT3_OR     =   3'b110;
 parameter FUNCT3_AND    =   3'b111;
+parameter FUNCT7_ADD    =   7'b00000_00;
+parameter FUNCT7_SUB    =   7'b01000_00;
+parameter FUNCT7_SRL    =   7'b00000_00;
+parameter FUNCT7_SRA    =   7'b01000_00;
+
 
 parameter OP_FENCE	=	7'b00011_11;
 /*

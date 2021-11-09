@@ -49,6 +49,8 @@ wire [6:0] funct7 = inst_i[`INST_FUNCT7];
 wire branch_taken = 
     (funct3 == FUNCT3_BEQ) ? ((r0data_i == r1data_i) ? 1'b1 : 1'b0) :
     (funct3 == FUNCT3_BNE) ? ((r0data_i != r1data_i) ? 1'b1 : 1'b0) :
+    (funct3 == FUNCT3_BLTU) ? ((r0data_i < r1data_i) ? 1'b1 : 1'b0) :
+    (funct3 == FUNCT3_BGEU) ? ((r0data_i >= r1data_i) ? 1'b1 : 1'b0) :
     1'b0;
 
 wire cke = ~valid_ro | ready_i;

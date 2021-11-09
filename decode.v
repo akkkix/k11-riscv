@@ -96,7 +96,7 @@ assign r0valid_o = (r_type | i_type | s_type | b_type) & valid_i;
 assign r1num_o = inst_i[`INST_RS2];
 assign r1valid_o = (r_type | s_type | b_type) & valid_i;
 assign rdnum_o = inst_i[`INST_RD];
-assign rdreserve_o = (r_type | i_type | u_type) & cke  & (valid_i & ~rsreserved_i); //matiawase
+assign rdreserve_o = (r_type | i_type | u_type | j_type ) & cke  & (valid_i & ~rsreserved_i); //matiawase
 
 endmodule
 `resetall

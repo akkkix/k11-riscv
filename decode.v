@@ -89,11 +89,11 @@ always @(posedge clk or posedge rst) begin
 end
 
 assign ready_o = cke & ~rsreserved_i; //matiawase
-assign r0num_o = inst_i[`RIS_INST_RS1];
+assign r0num_o = inst_i[`INST_RS1];
 assign r0valid_o = (r_type | i_type | s_type | b_type) & valid_i;
-assign r1num_o = inst_i[`RS_INST_RS2];
+assign r1num_o = inst_i[`INST_RS2];
 assign r1valid_o = (r_type | s_type | b_type) & valid_i;
-assign rdnum_o = inst_i[`RIU_INST_RD];
+assign rdnum_o = inst_i[`INST_RD];
 assign rdreserve_o = (r_type | i_type | u_type) & cke  & (valid_i & ~rsreserved_i); //matiawase
 
 endmodule

@@ -24,13 +24,10 @@ module execute(
     output reg [31:0] inst_ro,
     output reg [31:0] r0data_ro,
     output reg [31:0] r1data_ro,
-
-    output reg [31:0] result_ro
+    output reg [31:0] result_ro,
     
     output wire [31:0] jump_addr_o,
-    output wire [31:0] branch_taken_o
-
-
+    output wire [31:0] jump_taken_o
 );
 
 `include "./opcode_def.v"
@@ -75,10 +72,8 @@ always @(posedge clk or posedge rst) begin
             end else if(opcode == BOP_AUIPC) begin
                 result_ro <= {inst_i[`U_INST_IMM_12] , {12{1'b0}}} + pc_i;
             end else if(opcode == BOP_JAL) begin
-                // TODO: branch_addr_r <= inst_addr_r + {{11{inst_imm_31_12_20_21[19]}} ,inst_imm_31_12_20_21, 1'b0};
                 result_ro <= pc_i + 32'd4; // todo
             end else if(opcode == BOP_JALR) begin
-                // TODO: branch_addr_r <= rs1_r + {{20{inst_imm_20[11]}} ,inst_imm_20};
                 result_ro <= pc_i + 32'd4; //todo
             end
         end
@@ -88,8 +83,15 @@ end
 assign ready_o = cke;
 
 assign jump_addr_o = 
-    (opcode == BOP_JAL) ? pc_i + {{11{inst_imm_31_12_20_21[19]}} ,inst_imm_31_12_20_21, 1'b0} :
-    (opcode == BOP_JALR) ? pc_i 
+    (opcode == BOP_JAL) ? pc_i + {{12{inst_imm_31_12_20_21[19]}} ,inst_imm_31_12_20_21} :
+    (opcode == BOP_JALR) ? ((r0data_i + {{20{inst_imm_20[11]}} ,inst_imm_20}) & 32'hFFFFFFFE) :
+    32'hFFFFFFFF;
+assign jump_taken_o =
+    (
+        (opcode == BOP_JAL) ? 1'b1 :
+        (opcode == BOP_JALR) ? 1'b1 :
+        1'b0
+    ) & cke & valid_i;
 
 endmodule
 `resetall

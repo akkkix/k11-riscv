@@ -25,8 +25,12 @@ module writeback(
     output wire [31:0] rddata_o
 );
 
+`include "./opcode_def.v"
+
+wire [6:0] opcode = inst_i[`INST_OPCODE];
+
 wire r_type = (
-    opcode == BOP_OP 
+    opcode == BOP_OP
 
 ) ? 1'b1 : 1'b0;
 wire i_type = (

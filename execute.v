@@ -72,11 +72,17 @@ always @(posedge clk or posedge rst) begin
             if(opcode == BOP_OPIMM) begin
                 result_ro <=
                     (funct3 == FUNCT3_ADD) ? r0data_i + {{20{inst_imm_20[11]}} ,inst_imm_20} : 
+                    (funct3 == FUNCT3_XOR) ? r0data_i ^ {{20{inst_imm_20[11]}} ,inst_imm_20} :
+                    (funct3 == FUNCT3_OR) ? r0data_i | {{20{inst_imm_20[11]}} ,inst_imm_20} :
+                    (funct3 == FUNCT3_AND) ? r0data_i & {{20{inst_imm_20[11]}} ,inst_imm_20} :
                     (funct3 == FUNCT3_SLL) ? r0data_i << inst_imm_20[4:0] :
                     32'hFFFFFFFF;
             end else if(opcode == BOP_OP) begin
                 result_ro <= 
-                    (funct3 == FUNCT3_ADD) ? r0data_i + r1data_i : 
+                    (funct3 == FUNCT3_ADD) ? r0data_i + r1data_i :
+                    (funct3 == FUNCT3_XOR) ? r0data_i ^ r1data_i :
+                    (funct3 == FUNCT3_OR) ? r0data_i | r1data_i :
+                    (funct3 == FUNCT3_AND) ? r0data_i & r1data_i :
                     (funct3 == FUNCT3_SLL) ? r0data_i << r1data_i[4:0] :
                     32'hFFFFFFFF;
             end else if(opcode == BOP_LUI) begin

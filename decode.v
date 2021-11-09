@@ -76,6 +76,8 @@ always @(posedge clk or posedge rst) begin
         valid_ro <= 0;
         pc_ro <= 32'd0;
         inst_ro <= 32'd0;
+        r0data_ro <= 32'd0;
+        r1data_ro <= 32'd0;
     end
     else begin
         if(cke) begin

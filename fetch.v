@@ -22,6 +22,7 @@ always @(posedge clk or posedge rst) begin
         valid_ro <= 1;
         pc_ro <= 0;
         branch_taken_r <= 0;
+        branch_addr_r <= 0;
     end
     else begin
         if(cke) begin

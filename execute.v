@@ -26,8 +26,14 @@ module execute(
     output reg [31:0] r1data_ro,
     output reg [31:0] result_ro,
     
-    output wire [31:0] jump_addr_o,
-    output wire [31:0] jump_taken_o
+    output wire [31:0] jumpaddr_o,
+    output wire [31:0] jumptaken_o,
+
+    output wire [31:0] datamemaddr_o, 
+    output wire [31:0] datamemdata_o,
+    output wire datamemwrite_o,
+    output wire [1:0] datamemwidth_o
+
 );
 
 `include "./opcode_def.v"
@@ -53,6 +59,7 @@ always @(posedge clk or posedge rst) begin
         inst_ro <= 32'd0;
         r0data_ro <= 32'd0;
         r1data_ro <= 32'd0;
+        result_ro <= 32'd0;
 
     end
     else begin
@@ -87,17 +94,25 @@ end
 
 assign ready_o = cke;
 
-assign jump_addr_o = 
+assign jumpaddr_o = 
     (opcode == BOP_JAL) ? pc_i + {{12{inst_imm_31_12_20_21[19]}} ,inst_imm_31_12_20_21} :
     (opcode == BOP_JALR) ? ((r0data_i + {{20{inst_imm_20[11]}} ,inst_imm_20}) & 32'hFFFFFFFE) :
     32'hFFFFFFFF;
-assign jump_taken_o =
+assign jumptaken_o =
     (
         (opcode == BOP_JAL) ? 1'b1 :
         (opcode == BOP_JALR) ? 1'b1 :
         (opcode == BOP_BRANCH) ? branch_taken :
         1'b0
     ) & cke & valid_i;
+
+assign datamemaddr_o = 
+    (opcode == BOP_LOAD) ? r0data_i + {{20{inst_imm_20[11]}},inst_imm_20} :
+    (opcode == BOP_STORE) ? r0data_i + {{20{inst_imm_25_7[11]}},inst_imm_25_7} :
+    32'h00000000;
+assign datamemdata_o = r1data_i;
+assign datamemwrite_o = ((opcode == BOP_STORE) ? 1'b1 : 1'b0) & cke & valid_i;
+assign datamemwidth_o = funct3[1:0];
 
 endmodule
 `resetall

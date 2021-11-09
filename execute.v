@@ -85,7 +85,7 @@ always @(posedge clk or posedge rst) begin
                     (funct3 == FUNCT3_OR) ? r0data_i | r1data_i :
                     (funct3 == FUNCT3_AND) ? r0data_i & r1data_i :
                     (funct3 == FUNCT3_SLL) ? r0data_i << r1data_i[4:0] :
-                    (funct3 == FUNCT3_SRL) ? r0data_i << inst_imm_20[4:0] :
+                    (funct3 == FUNCT3_SRL) ? r0data_i >> inst_imm_20[4:0] :
                     32'hFFFFFFFF;
             end else if(opcode == BOP_LUI) begin
                 result_ro <= {inst_i[`U_INST_IMM_12] , {12{1'b0}}};

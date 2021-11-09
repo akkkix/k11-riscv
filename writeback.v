@@ -59,6 +59,7 @@ wire j_type = (
 // end
 
 // assign ready_o = cke;
+assign ready_o = 1'b1;
 
 assign rdvalid_o =  (r_type | i_type | u_type | j_type ) & valid_i;
 assign rdnum_o = inst_i[`INST_RD];

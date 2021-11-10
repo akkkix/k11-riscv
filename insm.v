@@ -18,12 +18,12 @@ module insm(
     output wire [31:0] insmemaddr_o,
     input wire [31:0] insmemdata_i,
 
-    output wire [31:0] inst_o
+    output wire [31:0] inst_o,
 
-    //input wire jump_taken_i
+    input wire jump_taken_i
 );
 
-wire cke = ~valid_ro | ready_i;
+wire cke = ~valid_ro | ready_i | jump_taken_i;
 
 always @(posedge clk or posedge rst) begin
     if(rst)begin
@@ -32,7 +32,7 @@ always @(posedge clk or posedge rst) begin
     end
     else begin
         if(cke) begin
-            valid_ro <= valid_i;
+            valid_ro <= valid_i & ~jump_taken_i;
             pc_ro <= pc_i;
         end
     end

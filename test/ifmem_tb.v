@@ -45,7 +45,8 @@ module ifmem_tb(
         .insmemaddr_o(insm_insmemaddr_o),
         .insmemdata_i(insr_dout),
 
-        .inst_o(insm_inst)
+        .inst_o(insm_inst),
+        .jump_taken_i(branch_taken)
     );
 
     insrom insr(

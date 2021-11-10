@@ -31,9 +31,9 @@ module decode(
     output reg [31:0] pc_ro,
     output reg [31:0] inst_ro,
     output reg [31:0] r0data_ro,
-    output reg [31:0] r1data_ro
+    output reg [31:0] r1data_ro,
 
-    //input wire jump_taken_i
+    input wire jump_taken_i
 );
 
 `include "./opcode_def.v"
@@ -69,10 +69,10 @@ wire j_type = (
 
 ) ? 1'b1 : 1'b0;
 
-wire cke = ~valid_ro | ready_i;
+wire cke = ~valid_ro | ready_i | jump_taken_i;
 
 always @(posedge clk or posedge rst) begin
-    if(rst)begin
+    if(rst) begin
         valid_ro <= 0;
         pc_ro <= 32'd0;
         inst_ro <= 32'd0;
@@ -81,7 +81,7 @@ always @(posedge clk or posedge rst) begin
     end
     else begin
         if(cke) begin
-            valid_ro <= valid_i & ~rsreserved_i; //matiawase
+            valid_ro <= valid_i & ~jump_taken_i & ~rsreserved_i; //matiawase
             pc_ro <= pc_i;
             inst_ro <= inst_i;
             r0data_ro <= r0data_i;
@@ -92,11 +92,11 @@ end
 
 assign ready_o = cke & ~rsreserved_i; //matiawase
 assign r0num_o = inst_i[`INST_RS1];
-assign r0valid_o = (r_type | i_type | s_type | b_type) & valid_i;
+assign r0valid_o = (r_type | i_type | s_type | b_type) & valid_i & ~jump_taken_i;
 assign r1num_o = inst_i[`INST_RS2];
-assign r1valid_o = (r_type | s_type | b_type) & valid_i;
+assign r1valid_o = (r_type | s_type | b_type) & valid_i & ~jump_taken_i;
 assign rdnum_o = inst_i[`INST_RD];
-assign rdreserve_o = (r_type | i_type | u_type | j_type ) & cke  & (valid_i & ~rsreserved_i); //matiawase
+assign rdreserve_o = (r_type | i_type | u_type | j_type ) & cke  & (valid_i & ~jump_taken_i & ~rsreserved_i); //matiawase
 
 endmodule
 `resetall

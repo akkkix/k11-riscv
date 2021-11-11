@@ -27,7 +27,7 @@ module execute(
     output reg [31:0] result_ro,
     
     output wire [31:0] jumpaddr_o,
-    output wire [31:0] jumptaken_o,
+    output wire jumptaken_o,
 
     output wire [31:0] datamemaddr_o, 
     output wire [31:0] datamemdata_o,
@@ -99,6 +99,8 @@ always @(posedge clk or posedge rst) begin
                 result_ro <= pc_i + 32'd4; 
             end else if(opcode == BOP_JALR) begin
                 result_ro <= pc_i + 32'd4; 
+            end else begin 
+                result_ro <= 32'hFFFFFFFF;
             end
         end
     end

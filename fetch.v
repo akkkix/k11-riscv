@@ -28,7 +28,7 @@ always @(posedge clk or posedge rst) begin
         if(cke) begin
             //valid_ro <= valid_i;
             pc_ro <= (branch_taken_i) ? branch_addr_i : pc_ro + 32'd4;
-            branch_taken_r <= 1'b0;
+            //branch_taken_r <= 1'b0;
         end
         // else if(branch_taken_i) begin
         //     branch_taken_r <= branch_taken_i;

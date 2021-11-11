@@ -58,7 +58,7 @@ always @(posedge clk or posedge rst) begin
                     (funct3 == FUNCT3_LH) ? {{16{datamemdata_i[15]}},datamemdata_i[15:0]}:
                     (funct3 == FUNCT3_LW) ? datamemdata_i:
                     (funct3 == FUNCT3_LBU) ? datamemdata_i:
-                    (funct3 == FUNCT3_LHU) ? datamemdata_i}:
+                    (funct3 == FUNCT3_LHU) ? datamemdata_i:
                     32'hFFFFFFFF;
             end else begin
                 result_ro <= result_i;

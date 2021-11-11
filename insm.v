@@ -17,6 +17,7 @@ module insm(
 
     output wire [31:0] insmemaddr_o,
     input wire [31:0] insmemdata_i,
+    output wire insmemcke_o,
 
     output wire [31:0] inst_o,
 
@@ -40,6 +41,7 @@ end
 
 assign ready_o = cke;
 assign insmemaddr_o = pc_i;
+assign insmemcke_o = cke;
 assign inst_o = insmemdata_i;
 
 endmodule

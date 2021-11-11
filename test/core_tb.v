@@ -9,6 +9,7 @@ module core_tb(
     wire insm_valid;
     wire [31:0] insm_pcro;
     wire [31:0] insm_insmemaddr_o;
+    wire insm_insmemcke_o;
     wire [31:0] insm_inst;
     wire [31:0] insr_dout;
 
@@ -86,6 +87,7 @@ module core_tb(
 
         .insmemaddr_o(insm_insmemaddr_o),
         .insmemdata_i(insr_dout),
+        .insmemcke_o(insm_insmemcke_o),
 
         .inst_o(insm_inst),
         .jump_taken_i(execute_jumptaken)
@@ -94,6 +96,7 @@ module core_tb(
     insrom insr(
         .clk(clk),
         .rst(rst),
+        .cke(insm_insmemcke_o),
         .addr(fet_pcro),
         .dout(insr_dout)
     );

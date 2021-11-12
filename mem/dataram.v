@@ -42,7 +42,7 @@ module dataram(clk,addr,width,write,din,dout);
         end
     end
 
-    // initial begin
-    //     $readmemh("./mem/dataram.dat",mem_bank);
-    // end
+    initial begin
+        $readmemh("./mem/dataram.dat",mem_bank);
+    end
 endmodule

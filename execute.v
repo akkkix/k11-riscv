@@ -109,8 +109,9 @@ end
 assign ready_o = cke;
 
 assign jumpaddr_o = 
-    (opcode == BOP_JAL) ? pc_i + {{12{inst_imm_31_12_20_21[19]}} ,inst_imm_31_12_20_21} :
+    (opcode == BOP_JAL) ? pc_i + {{11{inst_imm_31_12_20_21[19]}} ,inst_imm_31_12_20_21, 1'b0} :
     (opcode == BOP_JALR) ? ((r0data_i + {{20{inst_imm_20[11]}} ,inst_imm_20}) & 32'hFFFFFFFE) :
+    (opcode == BOP_BRANCH) ? pc_i + {{19{inst_imm_31_7_25_8[11]}}, inst_imm_31_7_25_8, 1'b0} :
     32'hFFFFFFFF;
 assign jumptaken_o =
     (

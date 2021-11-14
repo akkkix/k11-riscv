@@ -57,8 +57,8 @@ wire branch_taken =
     (funct3 == FUNCT3_BNE) ? ((r0data_i != r1data_i) ? 1'b1 : 1'b0) :
     (funct3 == FUNCT3_BLTU) ? ((r0data_i < r1data_i) ? 1'b1 : 1'b0) :
     (funct3 == FUNCT3_BGEU) ? ((r0data_i >= r1data_i) ? 1'b1 : 1'b0) :
-    (funct3 == FUNCT3_BLT) ? : (r0subr1[31] ^ r0subr1_of) & ~r0subr1_zero :
-    (funct3 == FUNCT3_BGE) ? : (r0subr1[31] ~^ r0subr1_of) | r0subr1_zero :
+    (funct3 == FUNCT3_BLT) ? (r0subr1[31] ^ r0subr1_of) & ~r0subr1_zero :
+    (funct3 == FUNCT3_BGE) ? (r0subr1[31] ~^ r0subr1_of) | r0subr1_zero :
     1'b0;
 
 wire cke = ~valid_ro | ready_i;

@@ -92,6 +92,7 @@ always @(posedge clk or posedge rst) begin
                     (funct3 == FUNCT3_AND) ? r0data_i & {{20{inst_imm_20[11]}} ,inst_imm_20} :
                     (funct3 == FUNCT3_SLL) ? r0data_i << inst_imm_20[4:0] :
                     (funct3 == FUNCT3_SRL && funct7 == FUNCT7_SRL) ? r0data_i >> inst_imm_20[4:0] :
+                    (funct3 == FUNCT3_SRA && funct7 == FUNCT7_SRA) ?  $signed(r0data_i) >>> inst_imm_20[4:0]: 
                     (funct3 == FUNCT3_SLTU) ? ((r0data_i < {{20{inst_imm_20[11]}} ,inst_imm_20}) ? 32'd1 : 32'd0) :
                     (funct3 == FUNCT3_SLT) ? {31'd0, ((r0subimm20[31] ^ r0subimm20_of) & ~r0subimm20_zero)} :
                     32'hFFFFFFFF;
@@ -104,6 +105,7 @@ always @(posedge clk or posedge rst) begin
                     (funct3 == FUNCT3_AND) ? r0data_i & r1data_i :
                     (funct3 == FUNCT3_SLL) ? r0data_i << r1data_i[4:0] :
                     (funct3 == FUNCT3_SRL && funct7 == FUNCT7_SRL) ? r0data_i >> r1data_i[4:0] :
+                    (funct3 == FUNCT3_SRA && funct7 == FUNCT7_SRA) ?  $signed(r0data_i) >>> r1data_i[4:0]: 
                     (funct3 == FUNCT3_SLTU) ? ((r0data_i < r1data_i) ? 32'd1 : 32'd0) :
                     (funct3 == FUNCT3_SLT) ? {31'd0, ((r0subr1[31] ^ r0subr1_of) & ~r0subr1_zero)} : 
                     32'hFFFFFFFF;

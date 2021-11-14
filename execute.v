@@ -46,11 +46,19 @@ wire [11:0] inst_imm_31_7_25_8 =  {inst_i[`B_INST_IMM_31],inst_i[`B_INST_IMM_7],
 wire [2:0] funct3 = inst_i[`INST_FUNCT3];
 wire [6:0] funct7 = inst_i[`INST_FUNCT7];
 
+
+// branch signed comp
+wire [31:0] r0subr1 = r0data_i + (~r1data_i) + 32'd1;
+wire r0subr1_of = (r0data_i[31] & (~r1data_i[31]) & ~r0subr1[31]) | ((~r0data_i[31]) & (r1data_i[31]) & r0subr1[31]); // (-) + (-) -> (+) or (+) + (+) -> (-)
+wire r0subr1_zero = ((r0subr1 == 32'd0) ? 1'b1 : 1'b0);
+//
 wire branch_taken = 
     (funct3 == FUNCT3_BEQ) ? ((r0data_i == r1data_i) ? 1'b1 : 1'b0) :
     (funct3 == FUNCT3_BNE) ? ((r0data_i != r1data_i) ? 1'b1 : 1'b0) :
     (funct3 == FUNCT3_BLTU) ? ((r0data_i < r1data_i) ? 1'b1 : 1'b0) :
     (funct3 == FUNCT3_BGEU) ? ((r0data_i >= r1data_i) ? 1'b1 : 1'b0) :
+    (funct3 == FUNCT3_BLT) ? : (r0subr1[31] ^ r0subr1_of) & ~r0subr1_zero :
+    (funct3 == FUNCT3_BGE) ? : (r0subr1[31] ~^ r0subr1_of) | r0subr1_zero :
     1'b0;
 
 wire cke = ~valid_ro | ready_i;

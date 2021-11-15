@@ -282,6 +282,9 @@ module top;
                 if(p_reset) begin
                         counter <= 32'b0;
                 end else begin
+                        if(ckt_instance.execute_datamemaddr == 32'h000F0000 && ckt_instance.execute_datamemwrite == 1'b1) begin
+                            $write("%s",ckt_instance.execute_datamemdata[7:0]);
+                        end
                         if(counter == 32'd10000) begin
                                 $finish;
                         end

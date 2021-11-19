@@ -49,7 +49,23 @@ parameter FUNCT7_ADD    =   7'b00000_00;
 parameter FUNCT7_SUB    =   7'b01000_00;
 parameter FUNCT7_SRL    =   7'b00000_00;
 parameter FUNCT7_SRA    =   7'b01000_00;
+parameter FUNCT7_AND    =   7'b00000_00;
+parameter FUNCT7_OR     =   7'b00000_00;
+parameter FUNCT7_XOR    =   7'b00000_00;
+parameter FUNCT7_SLL    =   7'b00000_00;
+parameter FUNCT7_SLT    =   7'b00000_00;
+parameter FUNCT7_SLTU   =   7'b00000_00;
 
+// M_extension
+parameter FUNCT7_MULDIV =   7'b00000_01;
+parameter FUNCT3_MUL    =   3'b000;
+parameter FUNCT3_MULH   =   3'b001;
+parameter FUNCT3_MULHSU =   3'b010;
+parameter FUNCT3_MULHU  =   3'b011;
+parameter FUNCT3_DIV    =   3'b100;
+parameter FUNCT3_DIVU   =   3'b101;
+parameter FUNCT3_REM    =   3'b110;
+parameter FUNCT3_REMU   =   3'b111;
 
 parameter OP_FENCE	=	7'b00011_11;
 /*

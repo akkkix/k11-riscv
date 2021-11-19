@@ -92,7 +92,7 @@ always @(posedge clk or posedge rst) begin
                     (funct3 == FUNCT3_XOR) ? r0data_i ^ {{20{inst_imm_20[11]}} ,inst_imm_20} :
                     (funct3 == FUNCT3_OR) ? r0data_i | {{20{inst_imm_20[11]}} ,inst_imm_20} :
                     (funct3 == FUNCT3_AND) ? r0data_i & {{20{inst_imm_20[11]}} ,inst_imm_20} :
-                    (funct3 == FUNCT3_SLL) ? r0data_i << inst_imm_20[4:0] :
+                    (funct3 == FUNCT3_SLL && funct7 == FUNCT7_SLL) ? r0data_i << inst_imm_20[4:0] :
                     (funct3 == FUNCT3_SRL && funct7 == FUNCT7_SRL) ? r0data_i >> inst_imm_20[4:0] :
                     (funct3 == FUNCT3_SRA && funct7 == FUNCT7_SRA) ? arithmetic_right_shifter(r0data_i,inst_imm_20[4:0]) : 
                     (funct3 == FUNCT3_SLTU) ? ((r0data_i < {{20{inst_imm_20[11]}} ,inst_imm_20}) ? 32'd1 : 32'd0) :
@@ -102,14 +102,14 @@ always @(posedge clk or posedge rst) begin
                 result_ro <= 
                     (funct3 == FUNCT3_ADD && funct7 == FUNCT7_ADD) ? r0data_i + r1data_i :
                     (funct3 == FUNCT3_SUB && funct7 == FUNCT7_SUB) ? r0data_i + (~r1data_i) + 32'd1 :
-                    (funct3 == FUNCT3_XOR) ? r0data_i ^ r1data_i :
-                    (funct3 == FUNCT3_OR) ? r0data_i | r1data_i :
-                    (funct3 == FUNCT3_AND) ? r0data_i & r1data_i :
-                    (funct3 == FUNCT3_SLL) ? r0data_i << r1data_i[4:0] :
+                    (funct3 == FUNCT3_XOR && funct7 == FUNCT7_XOR) ? r0data_i ^ r1data_i :
+                    (funct3 == FUNCT3_OR && funct7 == FUNCT7_OR) ? r0data_i | r1data_i :
+                    (funct3 == FUNCT3_AND && funct7 == FUNCT7_AND) ? r0data_i & r1data_i :
+                    (funct3 == FUNCT3_SLL && funct7 == FUNCT7_SLL) ? r0data_i << r1data_i[4:0] :
                     (funct3 == FUNCT3_SRL && funct7 == FUNCT7_SRL) ? r0data_i >> r1data_i[4:0] :
                     (funct3 == FUNCT3_SRA && funct7 == FUNCT7_SRA) ? arithmetic_right_shifter(r0data_i,r1data_i[4:0]): 
-                    (funct3 == FUNCT3_SLTU) ? ((r0data_i < r1data_i) ? 32'd1 : 32'd0) :
-                    (funct3 == FUNCT3_SLT) ? {31'd0, ((r0subr1[31] ^ r0subr1_of) & ~r0subr1_zero)} : 
+                    (funct3 == FUNCT3_SLTU && funct7 == FUNCT7_SLTU) ? ((r0data_i < r1data_i) ? 32'd1 : 32'd0) :
+                    (funct3 == FUNCT3_SLT && funct7 == FUNCT7_SLT) ? {31'd0, ((r0subr1[31] ^ r0subr1_of) & ~r0subr1_zero)} : 
                     32'hFFFFFFFF;
             end else if(opcode == BOP_LUI) begin
                 result_ro <= {inst_i[`U_INST_IMM_12] , {12{1'b0}}};

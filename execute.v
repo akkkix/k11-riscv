@@ -68,6 +68,7 @@ wire branch_taken =
 wire cke = ~valid_ro | ready_i;
 
 `include "./arithmetic_right_shifter.v"
+`include "./multiplier_divider.v"
 
 always @(posedge clk or posedge rst) begin
     if(rst)begin
@@ -110,15 +111,14 @@ always @(posedge clk or posedge rst) begin
                     (funct3 == FUNCT3_SRA && funct7 == FUNCT7_SRA) ? arithmetic_right_shifter(r0data_i,r1data_i[4:0]):
                     (funct3 == FUNCT3_SLTU && funct7 == FUNCT7_SLTU) ? ((r0data_i < r1data_i) ? 32'd1 : 32'd0) :
                     (funct3 == FUNCT3_SLT && funct7 == FUNCT7_SLT) ? {31'd0, ((r0subr1[31] ^ r0subr1_of) & ~r0subr1_zero)} :
-                    // (funct3 == FUNCT3_MUL && funct7 == FUNCT7_MULDIV) ? $signed(r0data_i) * $signed(r1data_i) :
-                    // (funct3 == FUNCT3_MULH && funct7 == FUNCT7_MULDIV) ? ($signed({{32{r0data_i[31]}},r0data_i}) * $signed({{32{r1data_i[31]}},r1data_i})) >> 32:
-                    // (funct3 == FUNCT3_MULHSU && funct7 == FUNCT7_MULDIV) ? ($signed({{32{r0data_i[31]}},r0data_i}) * $signed({{32'd0},r1data_i})) >> 32:
-                    // (funct3 == FUNCT3_MULHU && funct7 == FUNCT7_MULDIV) ? ({{32'd0},r0data_i} * {{32'd0},r1data_i}) >> 32:
-                    // (funct3 == FUNCT3_DIV && funct7 == FUNCT7_MULDIV) ? $signed(r0data_i) / $signed(r1data_i) :
-                    // (funct3 == FUNCT3_DIVU && funct7 == FUNCT7_MULDIV) ? r0data_i / r1data_i:
-                    // (funct3 == FUNCT3_REM && funct7 == FUNCT7_MULDIV) ? $signed(r0data_i) % $signed(r1data_i) :
-                    // (funct3 == FUNCT3_REMU && funct7 == FUNCT7_MULDIV) ? r0data_i % r1data_i: 
-                    // ugokanai
+                    (funct3 == FUNCT3_MUL && funct7 == FUNCT7_MULDIV) ? (multiplier(r0data_i,r0data_i[31],r1data_i,r1data_i[31]))[31:0]:
+                    (funct3 == FUNCT3_MULH && funct7 == FUNCT7_MULDIV) ? (multiplier(r0data_i,r0data_i[31],r1data_i,r1data_i[31]))[63:32]:
+                    (funct3 == FUNCT3_MULHSU && funct7 == FUNCT7_MULDIV) ? (multiplier(r0data_i,r0data_i[31],r1data_i,1'b0))[63:32]:
+                    (funct3 == FUNCT3_MULHU && funct7 == FUNCT7_MULDIV) ? (multiplier(r0data_i,1'b0,r1data_i,1'b0))[63:32]:
+                    (funct3 == FUNCT3_DIV && funct7 == FUNCT7_MULDIV) ? divider(r0data_i,r0data_i[31],r1data_i,r1data_i[31]) :
+                    (funct3 == FUNCT3_DIVU && funct7 == FUNCT7_MULDIV) ? divider(r0data_i,1'b0,r1data_i,1'b0):
+                    (funct3 == FUNCT3_REM && funct7 == FUNCT7_MULDIV) ? reminder(r0data_i,r0data_i[31],r1data_i,r1data_i[31]) :
+                    (funct3 == FUNCT3_REMU && funct7 == FUNCT7_MULDIV) ? reminder(r0data_i,1'b0,r1data_i,1'b0): 
                     32'hFFFFFFFF;
             end else if(opcode == BOP_LUI) begin
                 result_ro <= {inst_i[`U_INST_IMM_12] , {12{1'b0}}};

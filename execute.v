@@ -66,26 +66,28 @@ wire branch_taken =
     1'b0;
 
 // multiplier and divider
-wire absr0 = (a_signbit == 1'b1) ?  (~r0data_i + 1'b1) : r0data_i;
-wire absr1 = (b_signbit == 1'b1) ?  (~r1data_i + 1'b1) : r1data_i;
+wire [31:0] absr0 = (r0neg == 1'b1) ?  (~r0data_i + 1'b1) : r0data_i;
+wire [31:0] absr1 = (r1neg == 1'b1) ?  (~r1data_i + 1'b1) : r1data_i;
 
-wire absr0multabsr1 = {32'd0,a} * {32'd0,b};
-wire absr0divabsr1 = r0data_i / r1data_i;
-wire absr0remabsr1 = r0data_i % r1data_i;
+wire r0neg = (funct3 == FUNCT3_MUL || funct3 == FUNCT3_MULH || funct3 == FUNCT3_MULHSU || FUNCT3_DIV || FUNCT3_REM) ? r0data_i[31] : 1'b0;
+wire r1neg = (funct3 == FUNCT3_MUL || funct3 == FUNCT3_MULH || FUNCT3_DIV || FUNCT3_REM) ? r1data_i[31] : 1'b0;
 
-wire r0multr1 = ((a_signbit ^ b_signbit) == 1'b1) ? (~c + 1'b1) : c;
-wire r0divr1 = (b == 32'd0) ? 32'hFFFFFFFF :
-        ((a_signbit ^ b_signbit) == 1'b1) ? (~c + 1'b1) :
-        c;
-wire r0remr1 = (b == 32'd0) ? a :
-        (a_signbit == 1'b1) ? (~c + 1'b1) :
-        c;
+wire [63:0] absr0multabsr1 = {32'd0,absr0} * {32'd0,absr1};
+wire [31:0] absr0divabsr1 = absr0 / absr1;
+wire [31:0] absr0remabsr1 = absr0 % absr1;
+
+wire [63:0] r0multr1 = ((r0neg ^ r1neg) == 1'b1) ? (~absr0multabsr1 + 1'b1) : absr0multabsr1;
+wire [31:0] r0divr1 = (r1data_i == 32'd0) ? 32'hFFFFFFFF :
+        ((r0neg ^ r1neg) == 1'b1) ? (~absr0divabsr1 + 1'b1) :
+        absr0divabsr1;
+wire [31:0] r0remr1 = (r1data_i == 32'd0) ? r0data_i :
+        (r0neg == 1'b1) ? (~absr0remabsr1 + 1'b1) :
+        absr0remabsr1;
 //
 
 wire cke = ~valid_ro | ready_i;
 
 `include "./arithmetic_right_shifter.v"
-`include "./multiplier_divider.v"
 
 always @(posedge clk or posedge rst) begin
     if(rst)begin
@@ -128,14 +130,14 @@ always @(posedge clk or posedge rst) begin
                     (funct3 == FUNCT3_SRA && funct7 == FUNCT7_SRA) ? arithmetic_right_shifter(r0data_i,r1data_i[4:0]):
                     (funct3 == FUNCT3_SLTU && funct7 == FUNCT7_SLTU) ? ((r0data_i < r1data_i) ? 32'd1 : 32'd0) :
                     (funct3 == FUNCT3_SLT && funct7 == FUNCT7_SLT) ? {31'd0, ((r0subr1[31] ^ r0subr1_of) & ~r0subr1_zero)} :
-                    (funct3 == FUNCT3_MUL && funct7 == FUNCT7_MULDIV) ? (multiplier(r0data_i,r0data_i[31],r1data_i,r1data_i[31]))[31:0]:
-                    (funct3 == FUNCT3_MULH && funct7 == FUNCT7_MULDIV) ? (multiplier(r0data_i,r0data_i[31],r1data_i,r1data_i[31]))[63:32]:
-                    (funct3 == FUNCT3_MULHSU && funct7 == FUNCT7_MULDIV) ? (multiplier(r0data_i,r0data_i[31],r1data_i,1'b0))[63:32]:
-                    (funct3 == FUNCT3_MULHU && funct7 == FUNCT7_MULDIV) ? (multiplier(r0data_i,1'b0,r1data_i,1'b0))[63:32]:
-                    (funct3 == FUNCT3_DIV && funct7 == FUNCT7_MULDIV) ? divider(r0data_i,r0data_i[31],r1data_i,r1data_i[31]) :
-                    (funct3 == FUNCT3_DIVU && funct7 == FUNCT7_MULDIV) ? divider(r0data_i,1'b0,r1data_i,1'b0):
-                    (funct3 == FUNCT3_REM && funct7 == FUNCT7_MULDIV) ? reminder(r0data_i,r0data_i[31],r1data_i,r1data_i[31]) :
-                    (funct3 == FUNCT3_REMU && funct7 == FUNCT7_MULDIV) ? reminder(r0data_i,1'b0,r1data_i,1'b0): 
+                    (funct3 == FUNCT3_MUL && funct7 == FUNCT7_MULDIV) ? r0multr1[31:0]:
+                    (funct3 == FUNCT3_MULH && funct7 == FUNCT7_MULDIV) ? r0multr1[63:32]:
+                    (funct3 == FUNCT3_MULHSU && funct7 == FUNCT7_MULDIV) ? r0multr1[63:32]:
+                    (funct3 == FUNCT3_MULHU && funct7 == FUNCT7_MULDIV) ? r0multr1[63:32]:
+                    (funct3 == FUNCT3_DIV && funct7 == FUNCT7_MULDIV) ? r0divr1 :
+                    (funct3 == FUNCT3_DIVU && funct7 == FUNCT7_MULDIV) ? r0divr1:
+                    (funct3 == FUNCT3_REM && funct7 == FUNCT7_MULDIV) ? r0remr1 :
+                    (funct3 == FUNCT3_REMU && funct7 == FUNCT7_MULDIV) ? r0remr1: 
                     32'hFFFFFFFF;
             end else if(opcode == BOP_LUI) begin
                 result_ro <= {inst_i[`U_INST_IMM_12] , {12{1'b0}}};

@@ -65,6 +65,23 @@ wire branch_taken =
     (funct3 == FUNCT3_BGE) ? (r0subr1[31] ~^ r0subr1_of) | r0subr1_zero :
     1'b0;
 
+// multiplier and divider
+wire absr0 = (a_signbit == 1'b1) ?  (~r0data_i + 1'b1) : r0data_i;
+wire absr1 = (b_signbit == 1'b1) ?  (~r1data_i + 1'b1) : r1data_i;
+
+wire absr0multabsr1 = {32'd0,a} * {32'd0,b};
+wire absr0divabsr1 = r0data_i / r1data_i;
+wire absr0remabsr1 = r0data_i % r1data_i;
+
+wire r0multr1 = ((a_signbit ^ b_signbit) == 1'b1) ? (~c + 1'b1) : c;
+wire r0divr1 = (b == 32'd0) ? 32'hFFFFFFFF :
+        ((a_signbit ^ b_signbit) == 1'b1) ? (~c + 1'b1) :
+        c;
+wire r0remr1 = (b == 32'd0) ? a :
+        (a_signbit == 1'b1) ? (~c + 1'b1) :
+        c;
+//
+
 wire cke = ~valid_ro | ready_i;
 
 `include "./arithmetic_right_shifter.v"
